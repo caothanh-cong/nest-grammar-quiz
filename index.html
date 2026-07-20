@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEST: Grammar and Vocab Test #1</title>
+    <style>
+        :root {
+            --nest-navy: #1a365d;
+            --nest-blue: #2b6cb0;
+            --nest-light-blue: #ebf8ff;
+            --nest-accent: #ed8936;
+            --nest-green: #38a169;
+            --nest-red: #e53e3e;
+            --bg-body: #f7fafc;
+            --bg-card: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin: 0;
+            background-color: var(--bg-body);
+        }
+
+        /* --- Header & Timer --- */
+        header {
+            background: linear-gradient(135deg, var(--nest-navy) 0%, var(--nest-blue) 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--nest-accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .timer-box {
+            position: absolute;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .timer-warning {
+            background: var(--nest-red) !important;
+            border-color: var(--nest-red) !important;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: translateY(-50%) scale(1); }
+            to { transform: translateY(-50%) scale(1.05); }
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* --- Cards & Sections --- */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02), 0 10px 15px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            color: var(--nest-navy);
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--nest-light-blue);
+        }
+
+        .instruction {
+            background-color: var(--nest-light-blue);
+            color: var(--nest-blue);
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--nest-blue);
+        }
+
+        /* --- Student Info --- */
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: var(--nest-navy);
+            font-size: 14px;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--nest-blue);
+            box-shadow: 0 0 0 3px var(--nest-light-blue);
+        }
+
+        /* --- Questions --- */
+        .question-block {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .question-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+        
+        .u { text-decoration: underline; font-weight: bold; }
+
+        /* --- Radio Buttons --- */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .options-grid.two-col {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background-color: var(--bg-body);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+        }
+
+        .option-label:hover {
+            background-color: var(--nest-light-blue);
+            border-color: #bee3f8;
+        }
+
+        input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: var(--nest-blue);
+        }
+
+        input[type="radio"]:checked + span {
+            font-weight: 600;
+        }
+        
+        /* Interactive selection states managed by JS will be added inline */
+
+        /* --- Passages --- */
+        .passage {
+            background: #fffdf7;
+            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #334155;
+            margin-bottom: 25px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .art-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        /* --- Explanations & Grading --- */
+        .explanation-box {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+            background-color: #f8fafc;
+            border-left: 4px solid var(--nest-navy);
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Status classes applied by JS */
+        .status-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #86efac !important;
+            color: #166534;
+        }
+        .status-wrong {
+            background-color: #fef2f2 !important;
+            border-color: #fca5a5 !important;
+            color: #991b1b;
+        }
+        .status-missed {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            border-width: 2px !important;
+            color: #166534;
+        }
+
+        /* --- Submit Button --- */
+        .submit-btn {
+            background: var(--nest-accent);
+            color: white;
+            border: none;
+            padding: 18px 32px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(237, 137, 54, 0.3);
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(237, 137, 54, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        #results {
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 12px;
+            display: none;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .timer-box {
+                position: relative;
+                top: 0;
+                right: 0;
+                transform: none;
+                display: inline-block;
+                margin-top: 15px;
+            }
+            .student-info { grid-template-columns: 1fr; }
+            .options-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NEST</h1>
+        <p>Grammar and Vocab Test #1</p>
+        <div class="timer-box" id="timerDisplay">30:00</div>
+    </header>
+
+    <div class="container">
+        
+        <div class="card">
+            <h2 class="section-title">Student Information</h2>
+            <div class="student-info">
+                <div class="input-group">
+                    <label for="studentName">Full Name</label>
+                    <input type="text" id="studentName" placeholder="Enter your full name">
+                </div>
+                <div class="input-group">
+                    <label for="studentClass">Class</label>
+                    <input type="text" id="studentClass" placeholder="e.g. IELTS 6.5">
+                </div>
+            </div>
+        </div>
+
+        <form id="quizForm">
+            <!-- SECTION 1 -->
+            <div class="card">
+                <h2 class="section-title">Pronunciation & Stress</h2>
+                <div class="instruction">
+                    Mark the letter A, B, C, or D to indicate the word whose underlined part differs from the other three in pronunciation.
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 1.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q1" value="A"><span>A. ch<span class="u">i</span>ld</span></label>
+                        <label class="option-label"><input type="radio" name="q1" value="B"><span>B. f<span class="u">i</span>ll</span></label>
+                        <label class="option-label"><input type="radio" name="q1" value="C"><span>C. m<span class="u">i</span>lk</span></label>
+                        <label class="option-label"><input type="radio" name="q1" value="D"><span>D. p<span class="u">i</span>nk</span></label>
+                    </div>
+                    <div id="exp1" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 2.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q2" value="A"><span>A. te<span class="u">ch</span>nique</span></label>
+                        <label class="option-label"><input type="radio" name="q2" value="B"><span>B. <span class="u">ch</span>emist</span></label>
+                        <label class="option-label"><input type="radio" name="q2" value="C"><span>C. <span class="u">ch</span>ildren</span></label>
+                        <label class="option-label"><input type="radio" name="q2" value="D"><span>D. heada<span class="u">ch</span>e</span></label>
+                    </div>
+                    <div id="exp2" class="explanation-box"></div>
+                </div>
+
+                <div class="instruction" style="margin-top:30px;">
+                    Mark the letter A, B, C, or D to indicate the word that differs from the other three in the position of primary stress.
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 3.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q3" value="A"><span>A. enjoy</span></label>
+                        <label class="option-label"><input type="radio" name="q3" value="B"><span>B. consist</span></label>
+                        <label class="option-label"><input type="radio" name="q3" value="C"><span>C. beauty</span></label>
+                        <label class="option-label"><input type="radio" name="q3" value="D"><span>D. succeed</span></label>
+                    </div>
+                    <div id="exp3" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 4.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q4" value="A"><span>A. capable</span></label>
+                        <label class="option-label"><input type="radio" name="q4" value="B"><span>B. different</span></label>
+                        <label class="option-label"><input type="radio" name="q4" value="C"><span>C. difficult</span></label>
+                        <label class="option-label"><input type="radio" name="q4" value="D"><span>D. delightful</span></label>
+                    </div>
+                    <div id="exp4" class="explanation-box"></div>
+                </div>
+            </div>
+
+            <!-- SECTION 2 -->
+            <div class="card">
+                <h2 class="section-title">Grammar & Vocabulary</h2>
+                <div class="instruction">
+                    Mark the letter A, B, C, or D to indicate the correct answer to each of the following questions.
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 5. Hurricane Andrew swept through southern Florida ______ 1992.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q5" value="A"><span>A. for</span></label>
+                        <label class="option-label"><input type="radio" name="q5" value="B"><span>B. on</span></label>
+                        <label class="option-label"><input type="radio" name="q5" value="C"><span>C. at</span></label>
+                        <label class="option-label"><input type="radio" name="q5" value="D"><span>D. in</span></label>
+                    </div>
+                    <div id="exp5" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 6. I ______ from her since she left school.</div>
+                    <div class="options-grid two-col">
+                        <label class="option-label"><input type="radio" name="q6" value="A"><span>A. don’t hear</span></label>
+                        <label class="option-label"><input type="radio" name="q6" value="B"><span>B. haven’t heard</span></label>
+                        <label class="option-label"><input type="radio" name="q6" value="C"><span>C. didn’t hear</span></label>
+                        <label class="option-label"><input type="radio" name="q6" value="D"><span>D. hasn’t heard</span></label>
+                    </div>
+                    <div id="exp6" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 7. Of all the shoes that I have tried on, these ones are ______.</div>
+                    <div class="options-grid two-col">
+                        <label class="option-label"><input type="radio" name="q7" value="A"><span>A. comfortable</span></label>
+                        <label class="option-label"><input type="radio" name="q7" value="B"><span>B. less comfortable</span></label>
+                        <label class="option-label"><input type="radio" name="q7" value="C"><span>C. more comfortable</span></label>
+                        <label class="option-label"><input type="radio" name="q7" value="D"><span>D. the most comfortable</span></label>
+                    </div>
+                    <div id="exp7" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 8. If more chemicals are released into the environment, many species ______ extinct.</div>
+                    <div class="options-grid two-col">
+                        <label class="option-label"><input type="radio" name="q8" value="A"><span>A. will become</span></label>
+                        <label class="option-label"><input type="radio" name="q8" value="B"><span>B. are becoming</span></label>
+                        <label class="option-label"><input type="radio" name="q8" value="C"><span>C. becomes</span></label>
+                        <label class="option-label"><input type="radio" name="q8" value="D"><span>D. became</span></label>
+                    </div>
+                    <div id="exp8" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 9. This shopping mall, which ______ two years ago, attracts a lot of shoppers.</div>
+                    <div class="options-grid two-col">
+                        <label class="option-label"><input type="radio" name="q9" value="A"><span>A. built</span></label>
+                        <label class="option-label"><input type="radio" name="q9" value="B"><span>B. was built</span></label>
+                        <label class="option-label"><input type="radio" name="q9" value="C"><span>C. will be built</span></label>
+                        <label class="option-label"><input type="radio" name="q9" value="D"><span>D. was building</span></label>
+                    </div>
+                    <div id="exp9" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 10. Giving lucky money to the young at Tet is a common ______ in many Asian countries.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q10" value="A"><span>A. practice</span></label>
+                        <label class="option-label"><input type="radio" name="q10" value="B"><span>B. behaviour</span></label>
+                        <label class="option-label"><input type="radio" name="q10" value="C"><span>C. tradition</span></label>
+                        <label class="option-label"><input type="radio" name="q10" value="D"><span>D. habit</span></label>
+                    </div>
+                    <div id="exp10" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 11. This restaurant is ______ for its excellent dishes and service.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q11" value="A"><span>A. proud</span></label>
+                        <label class="option-label"><input type="radio" name="q11" value="B"><span>B. certain</span></label>
+                        <label class="option-label"><input type="radio" name="q11" value="C"><span>C. famous</span></label>
+                        <label class="option-label"><input type="radio" name="q11" value="D"><span>D. different</span></label>
+                    </div>
+                    <div id="exp11" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 12. Mary: “That’s a very nice skirt you’re wearing.” - Jolie: “______”</div>
+                    <div class="options-grid two-col">
+                        <label class="option-label"><input type="radio" name="q12" value="A"><span>A. You’re welcome.</span></label>
+                        <label class="option-label"><input type="radio" name="q12" value="B"><span>B. That’s all right.</span></label>
+                        <label class="option-label"><input type="radio" name="q12" value="C"><span>C. Don’t mention it.</span></label>
+                        <label class="option-label"><input type="radio" name="q12" value="D"><span>D. Thank you.</span></label>
+                    </div>
+                    <div id="exp12" class="explanation-box"></div>
+                </div>
+            </div>
+
+            <!-- SECTION 3 -->
+            <div class="card">
+                <h2 class="section-title">Cloze Test</h2>
+                <div class="instruction">
+                    Read the following passage and mark the letter A, B, C, or D to indicate the correct word or phrase that best fits each of the numbered blanks.
+                </div>
+
+                <div class="passage">
+                    <p>Owning a pet can be a great <strong>(13)</strong> ______. It is a chance to love and care for a living creature. By watching and looking at its growth and behavior, you will discover that having a pet can be exciting and <strong>(14)</strong> ______.</p>
+                    <p>It is also said that owning a pet reaps benefits to your health. You will have lower blood pressure and lower cholesterol levels. Owning a pet gives you a greater sense of well-being and <strong>(15)</strong> ______ your stress level.</p>
+                    <p>Different types of pets need different kinds of care. Some pets are easy to look <strong>(16)</strong> ______ while others are difficult. Pets are not toys and a certain amount of work is needed if you want to take care of <strong>(17)</strong> ______ properly. You must be willing to spend a part of each day to meet your pet's needs.</p>
+                    <p><strong>(18)</strong> ______ pets, big or small, depend on their owners for food, housing and protection. Although love is very important, it alone is not enough.</p>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 13.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q13" value="A"><span>A. activities</span></label>
+                        <label class="option-label"><input type="radio" name="q13" value="B"><span>B. way</span></label>
+                        <label class="option-label"><input type="radio" name="q13" value="C"><span>C. task</span></label>
+                        <label class="option-label"><input type="radio" name="q13" value="D"><span>D. pleasure</span></label>
+                    </div>
+                    <div id="exp13" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 14.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q14" value="A"><span>A. amusing</span></label>
+                        <label class="option-label"><input type="radio" name="q14" value="B"><span>B. amuse</span></label>
+                        <label class="option-label"><input type="radio" name="q14" value="C"><span>C. amused</span></label>
+                        <label class="option-label"><input type="radio" name="q14" value="D"><span>D. amusingly</span></label>
+                    </div>
+                    <div id="exp14" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 15.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q15" value="A"><span>A. decreases</span></label>
+                        <label class="option-label"><input type="radio" name="q15" value="B"><span>B. make</span></label>
+                        <label class="option-label"><input type="radio" name="q15" value="C"><span>C. increase</span></label>
+                        <label class="option-label"><input type="radio" name="q15" value="D"><span>D. cause</span></label>
+                    </div>
+                    <div id="exp15" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 16.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q16" value="A"><span>A. at</span></label>
+                        <label class="option-label"><input type="radio" name="q16" value="B"><span>B. for</span></label>
+                        <label class="option-label"><input type="radio" name="q16" value="C"><span>C. after</span></label>
+                        <label class="option-label"><input type="radio" name="q16" value="D"><span>D. into</span></label>
+                    </div>
+                    <div id="exp16" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 17.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q17" value="A"><span>A. it</span></label>
+                        <label class="option-label"><input type="radio" name="q17" value="B"><span>B. them</span></label>
+                        <label class="option-label"><input type="radio" name="q17" value="C"><span>C. they</span></label>
+                        <label class="option-label"><input type="radio" name="q17" value="D"><span>D. their</span></label>
+                    </div>
+                    <div id="exp17" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 18.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q18" value="A"><span>A. A</span></label>
+                        <label class="option-label"><input type="radio" name="q18" value="B"><span>B. Much</span></label>
+                        <label class="option-label"><input type="radio" name="q18" value="C"><span>C. All</span></label>
+                        <label class="option-label"><input type="radio" name="q18" value="D"><span>D. Any</span></label>
+                    </div>
+                    <div id="exp18" class="explanation-box"></div>
+                </div>
+            </div>
+
+            <!-- SECTION 4 -->
+            <div class="card">
+                <h2 class="section-title">Sentence Transformation & Building</h2>
+                <div class="instruction">
+                    Mark the letter A, B, C or D to indicate the sentence that is closest in meaning to the original sentence or properly built from cues.
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 19. “What time did you go to bed last night, Mike?” his mother asked.</div>
+                    <div class="options-grid" style="grid-template-columns: 1fr;">
+                        <label class="option-label"><input type="radio" name="q19" value="A"><span>A. Mike’s mother asked him what time he had gone to bed last night.</span></label>
+                        <label class="option-label"><input type="radio" name="q19" value="B"><span>B. Mike’s mother asked him what time he has gone to bed the previous night.</span></label>
+                        <label class="option-label"><input type="radio" name="q19" value="C"><span>C. Mike’s mother asked him what time he had gone to bed the previous night.</span></label>
+                        <label class="option-label"><input type="radio" name="q19" value="D"><span>D. Mike’s mother asked him what time he went to bed last night.</span></label>
+                    </div>
+                    <div id="exp19" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 20. The house belongs to my grandparents. It was built in 1975.</div>
+                    <div class="options-grid" style="grid-template-columns: 1fr;">
+                        <label class="option-label"><input type="radio" name="q20" value="A"><span>A. The house which it belongs to my grandparents was built in 1975.</span></label>
+                        <label class="option-label"><input type="radio" name="q20" value="B"><span>B. The house who belongs to my grandparents was built in 1975.</span></label>
+                        <label class="option-label"><input type="radio" name="q20" value="C"><span>C. The house which belongs to my grandparents was built in 1975.</span></label>
+                        <label class="option-label"><input type="radio" name="q20" value="D"><span>D. The house what belongs to my grandparents was built in 1975.</span></label>
+                    </div>
+                    <div id="exp20" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 21. Linda / go / cooking class / every Wednesday evening.</div>
+                    <div class="options-grid" style="grid-template-columns: 1fr;">
+                        <label class="option-label"><input type="radio" name="q21" value="A"><span>A. Linda went to the cooking class every Wednesday evening.</span></label>
+                        <label class="option-label"><input type="radio" name="q21" value="B"><span>B. Linda goes the cooking class every Wednesday evening.</span></label>
+                        <label class="option-label"><input type="radio" name="q21" value="C"><span>C. Linda will go to the cooking class every Wednesday evening.</span></label>
+                        <label class="option-label"><input type="radio" name="q21" value="D"><span>D. Linda goes to the cooking class every Wednesday evening.</span></label>
+                    </div>
+                    <div id="exp21" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 22. She / tell / me / quiet / because / baby / sleep.</div>
+                    <div class="options-grid" style="grid-template-columns: 1fr;">
+                        <label class="option-label"><input type="radio" name="q22" value="A"><span>A. She tells me to be quiet because the baby was sleeping.</span></label>
+                        <label class="option-label"><input type="radio" name="q22" value="B"><span>B. She told me be quiet because the baby was sleeping.</span></label>
+                        <label class="option-label"><input type="radio" name="q22" value="C"><span>C. She told me to be quiet because the baby is sleeping.</span></label>
+                        <label class="option-label"><input type="radio" name="q22" value="D"><span>D. She told me to be quiet because the baby was sleeping.</span></label>
+                    </div>
+                    <div id="exp22" class="explanation-box"></div>
+                </div>
+            </div>
+
+            <!-- SECTION 5 -->
+            <div class="card">
+                <h2 class="section-title">Reading Comprehension</h2>
+                <div class="instruction">
+                    Read the following passage and mark the letter A, B, C, or D to indicate the correct answer to each of the following questions.
+                </div>
+
+                <!-- ARTWORK -->
+                <div class="art-container">
+                    <svg viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 600px; height: auto; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+                        <defs>
+                            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#ff7e5f"/>
+                                <stop offset="60%" stop-color="#feb47b"/>
+                                <stop offset="100%" stop-color="#fdfbfb"/>
+                            </linearGradient>
+                            <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#1e3c72"/>
+                                <stop offset="100%" stop-color="#2a5298"/>
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Sky -->
+                        <rect width="600" height="250" fill="url(#skyGrad)" />
+                        
+                        <!-- Sun & Rays -->
+                        <circle cx="300" cy="140" r="50" fill="#ffd700" opacity="0.9" />
+                        <path d="M 300 90 L 300 40 M 350 140 L 400 140 M 300 190 L 300 240 M 250 140 L 200 140 M 335 105 L 370 70 M 335 175 L 370 210 M 265 175 L 230 210 M 265 105 L 230 70" stroke="#ffd700" stroke-width="4" opacity="0.4" stroke-linecap="round"/>
+
+                        <!-- Clouds -->
+                        <path d="M 100 80 Q 120 60 140 80 Q 160 70 170 90 Q 180 100 160 110 L 100 110 Q 80 100 100 80 Z" fill="#ffffff" opacity="0.7"/>
+                        <path d="M 450 60 Q 470 40 490 60 Q 510 50 520 70 Q 530 80 510 90 L 450 90 Q 430 80 450 60 Z" fill="#ffffff" opacity="0.6"/>
+
+                        <!-- Sea -->
+                        <rect x="0" y="160" width="600" height="90" fill="url(#seaGrad)" />
+                        
+                        <!-- Waves highlights (Red-yellow reflection) -->
+                        <path d="M 270 170 Q 300 175 330 170" fill="none" stroke="#ffeb3b" stroke-width="3" opacity="0.6" />
+                        <path d="M 260 185 Q 300 190 340 185" fill="none" stroke="#ff9800" stroke-width="2" opacity="0.5" />
+                        <path d="M 280 200 Q 300 205 320 200" fill="none" stroke="#ffeb3b" stroke-width="2" opacity="0.4" />
+
+                        <!-- Untouched Cliffs -->
+                        <path d="M 0 160 L 180 160 L 220 100 L 150 70 L 80 120 L 0 110 Z" fill="#4a4e69" />
+                        <path d="M 0 160 L 150 160 L 180 120 L 100 90 L 0 130 Z" fill="#22223b" opacity="0.8"/>
+                        
+                        <!-- Lighthouse Base Island -->
+                        <path d="M 480 160 Q 510 140 560 160 Z" fill="#3a3a3c" />
+                        
+                        <!-- Lighthouse -->
+                        <rect x="510" y="60" width="20" height="90" fill="#f8f9fa" />
+                        <!-- Red stripes -->
+                        <rect x="510" y="75" width="20" height="15" fill="#e63946" />
+                        <rect x="510" y="105" width="20" height="15" fill="#e63946" />
+                        <!-- Top -->
+                        <polygon points="520,30 500,50 540,50" fill="#1d3557" />
+                        <rect x="505" y="50" width="30" height="10" fill="#457b9d" />
+                        <circle cx="520" cy="45" r="4" fill="#ffb703" />
+
+                        <!-- Birds -->
+                        <path d="M 380 90 Q 390 80 400 90 Q 410 80 420 90" fill="none" stroke="#1d3557" stroke-width="2" />
+                        <path d="M 410 60 Q 415 55 420 60 Q 425 55 430 60" fill="none" stroke="#1d3557" stroke-width="1.5" />
+                    </svg>
+                </div>
+
+                <div class="passage">
+                    <p>Ke Ga Cape, which is about twenty-five kilometres from the city of Phan Thiet, is often overlooked by the majority of travellers coming to Viet Nam. Therefore, the peacefulness of this coastal area has been preserved. If you want to experience the 'real', unspoiled side of Viet Nam, we highly recommend that you add Ke Ga Cape to your 'places to visit' list.</p>
+                    <p>Once you've arrived at Ke Ga Cape, its attractions are immediately obvious. Most travellers are attracted by the sight of its untouched cliffs spreading out along the coast and the sound of the casuarina trees rustling in the breeze. On sunny days, you will be enthralled by the harmonious tones of the sea and sky, and the sight of clouds embracing the mountain peaks. You can also admire the splendid sunrise, and later go for a walk to enjoy the mesmerizing sunset. The red-yellow rays of the sun reflected in the waves paint an enchanting picture of the pristine Ke Ga Cape. Sometimes, it may be hard for you to distinguish where the sky ends and the sea begins.</p>
+                    <p>If you want to get to Ke Ga Lighthouse, taking a canoe is highly recommended because it is quick, convenient, and safe. Ke Ga Lighthouse is worth a visit during your Viet Nam tour, if you want to experience daily life in a fishing village. The locals are very friendly, warm-hearted, and sincere. Not surprisingly, they will often invite you to join them for a meal of their freshly caught seafood, which will definitely awaken your taste buds.</p>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 23. What is the main idea of the passage?</div>
+                    <div class="options-grid" style="grid-template-columns: 1fr;">
+                        <label class="option-label"><input type="radio" name="q23" value="A"><span>A. Ke Ga Cape - a travel destination in Vietnam.</span></label>
+                        <label class="option-label"><input type="radio" name="q23" value="B"><span>B. The ways to preserve Ke Ga Cape.</span></label>
+                        <label class="option-label"><input type="radio" name="q23" value="C"><span>C. How Ke Ga Cape attract tourists from all over the world.</span></label>
+                        <label class="option-label"><input type="radio" name="q23" value="D"><span>D. Some interesting activities in Ke Ga Cape.</span></label>
+                    </div>
+                    <div id="exp23" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 24. What attracts most travellers to Ke Ga Cape?</div>
+                    <div class="options-grid" style="grid-template-columns: 1fr;">
+                        <label class="option-label"><input type="radio" name="q24" value="A"><span>A. the harmonious tones of the sea and sky.</span></label>
+                        <label class="option-label"><input type="radio" name="q24" value="B"><span>B. the sight of clouds embracing the mountain peaks.</span></label>
+                        <label class="option-label"><input type="radio" name="q24" value="C"><span>C. cliffs spreading out along the coast.</span></label>
+                        <label class="option-label"><input type="radio" name="q24" value="D"><span>D. The red-yellow rays of the sun reflected in the waves.</span></label>
+                    </div>
+                    <div id="exp24" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 25. If you want to get to Ke Ga Lighthouse, you are highly recommended to take ______.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q25" value="A"><span>A. a bus</span></label>
+                        <label class="option-label"><input type="radio" name="q25" value="B"><span>B. a train</span></label>
+                        <label class="option-label"><input type="radio" name="q25" value="C"><span>C. a plane</span></label>
+                        <label class="option-label"><input type="radio" name="q25" value="D"><span>D. a canoe</span></label>
+                    </div>
+                    <div id="exp25" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 26. What are the locals in Ke Ga Lighthouse like?</div>
+                    <div class="options-grid two-col">
+                        <label class="option-label"><input type="radio" name="q26" value="A"><span>A. loyal and funny</span></label>
+                        <label class="option-label"><input type="radio" name="q26" value="B"><span>B. warm-hearted and quick</span></label>
+                        <label class="option-label"><input type="radio" name="q26" value="C"><span>C. friendly and sincere</span></label>
+                        <label class="option-label"><input type="radio" name="q26" value="D"><span>D. safe and convenient</span></label>
+                    </div>
+                    <div id="exp26" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 27. The word “enchanting” is CLOSEST in meaning to ______.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q27" value="A"><span>A. attractive</span></label>
+                        <label class="option-label"><input type="radio" name="q27" value="B"><span>B. ugly</span></label>
+                        <label class="option-label"><input type="radio" name="q27" value="C"><span>C. special</span></label>
+                        <label class="option-label"><input type="radio" name="q27" value="D"><span>D. exciting</span></label>
+                    </div>
+                    <div id="exp27" class="explanation-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">Question 28. The word “warm-hearted” is OPPOSITE in meaning to ______.</div>
+                    <div class="options-grid">
+                        <label class="option-label"><input type="radio" name="q28" value="A"><span>A. kind</span></label>
+                        <label class="option-label"><input type="radio" name="q28" value="B"><span>B. useful</span></label>
+                        <label class="option-label"><input type="radio" name="q28" value="C"><span>C. gentle</span></label>
+                        <label class="option-label"><input type="radio" name="q28" value="D"><span>D. unfriendly</span></label>
+                    </div>
+                    <div id="exp28" class="explanation-box"></div>
+                </div>
+            </div>
+
+            <button type="button" id="submitBtn" class="submit-btn" onclick="checkAnswers()">Submit Test</button>
+        </form>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const ASSIGNMENT_NAME = "NEST: Grammar and Vocab Test #1";
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxL7UqB79-fNZmL1Dskt5wOVgaur4qcYuyQvWosRVCWEFBg-clReIKD6BzGzf4cJkbz/exec';
+
+        // Timer Logic
+        let timeLeft = 30 * 60; // 30 minutes
+        let timerDisplay = document.getElementById('timerDisplay');
+        let timerActive = true;
+
+        let countdown = setInterval(function() {
+            if (!timerActive) return;
+            
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            
+            if (seconds < 10) seconds = "0" + seconds;
+            timerDisplay.innerText = minutes + ":" + seconds;
+            
+            // Add warning pulse in the last 2 minutes
+            if (timeLeft <= 120 && !timerDisplay.classList.contains('timer-warning')) {
+                timerDisplay.classList.add('timer-warning');
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerDisplay.innerText = "00:00";
+                alert("Time's up! Automatically submitting your answers.");
+                checkAnswers();
+            } else {
+                timeLeft--;
+            }
+        }, 1000);
+
+        // Answer Key
+        const answerKey = {
+            q1: "A", q2: "C", q3: "C", q4: "D", 
+            q5: "D", q6: "B", q7: "D", q8: "A", 
+            q9: "B", q10: "A", q11: "C", q12: "D",
+            q13: "D", q14: "A", q15: "A", q16: "C", 
+            q17: "B", q18: "C", q19: "C", q20: "C", 
+            q21: "D", q22: "D", q23: "A", q24: "C", 
+            q25: "D", q26: "C", q27: "A", q28: "D"
+        };
+
+        function checkAnswers() {
+            let name = document.getElementById('studentName').value.trim();
+            let studentClass = document.getElementById('studentClass').value.trim();
+
+            if (timeLeft > 0 && (!name || !studentClass)) {
+                alert("Please enter your Full Name and Class before submitting.");
+                return;
+            }
+            if (!name) name = "Anonymous (Time Out)";
+            if (!studentClass) studentClass = "Unknown";
+
+            timerActive = false;
+            clearInterval(countdown);
+            timerDisplay.classList.remove('timer-warning');
+            
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Grading & Sending...";
+            btn.disabled = true;
+
+            let score = 0;
+            let total = Object.keys(answerKey).length;
+
+            // Grade questions
+            for (let i = 1; i <= total; i++) {
+                let options = document.querySelectorAll(`input[name="q${i}"]`);
+                let studentAns = "";
+                let correctAns = answerKey['q' + i];
+                
+                let selectedOption = null;
+                options.forEach(opt => {
+                    opt.disabled = true; // Lock the radio buttons
+                    if (opt.checked) {
+                        studentAns = opt.value;
+                        selectedOption = opt;
+                    }
+                });
+
+                let expBox = document.getElementById('exp' + i);
+                
+                if (studentAns === correctAns) {
+                    score++;
+                    if (selectedOption) {
+                        selectedOption.parentElement.classList.add('status-correct');
+                    }
+                    expBox.innerHTML = `<strong>Correct! ✅</strong>`;
+                } else {
+                    if (selectedOption) {
+                        selectedOption.parentElement.classList.add('status-wrong');
+                    }
+                    // Highlight the correct one so they know what they missed
+                    let correctRadio = document.querySelector(`input[name="q${i}"][value="${correctAns}"]`);
+                    if (correctRadio) {
+                        correctRadio.parentElement.classList.add('status-missed');
+                    }
+                    expBox.innerHTML = `<strong>Incorrect ❌</strong> The correct answer is <strong>${correctAns}</strong>.`;
+                }
+                expBox.style.display = "block";
+            }
+
+            // Feedback based on score
+            let feedbackText = "";
+            let bgColor = "";
+            let textColor = "";
+
+            if (score <= 10) {
+                feedbackText = "Keep practicing! Review the rules and try again. 📚";
+                bgColor = "#fee2e2"; textColor = "#991b1b";
+            } else if (score <= 18) {
+                feedbackText = "Good effort! You're making progress. 👍";
+                bgColor = "#fef3c7"; textColor = "#92400e";
+            } else if (score <= 25) {
+                feedbackText = "Great job! Your English is solid. 🌟";
+                bgColor = "#e0f2fe"; textColor = "#075985";
+            } else {
+                feedbackText = "Outstanding! Perfect or near-perfect score! 🏆🎓";
+                bgColor = "#dcfce7"; textColor = "#166534";
+            }
+
+            const resultDiv = document.getElementById('results');
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = bgColor;
+            resultDiv.style.color = textColor;
+            resultDiv.innerHTML = `You scored ${score} out of ${total}!<br><span style="font-size:24px; display:block; margin-top:15px;">${feedbackText}</span><br><span style="font-size:14px; font-weight:normal; opacity:0.8;">Review your answers above. Syncing results...</span>`;
+
+            // Scroll to results
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Send data to Google Sheets
+            const submission = new URLSearchParams();
+            submission.set("assignmentName", ASSIGNMENT_NAME);
+            submission.set("assignment", ASSIGNMENT_NAME);
+            submission.set("name", name);
+            submission.set("studentClass", studentClass);
+            submission.set("score", String(score));
+            submission.set("total", String(total));
+
+            fetch(`${GOOGLE_SCRIPT_URL}?${submission.toString()}`, {
+                method: "GET",
+                mode: "no-cors",
+                cache: "no-store"
+            })
+            .then(() => {
+                btn.innerText = "Results Successfully Synced!";
+                btn.style.background = "#38a169";
+                btn.style.boxShadow = "none";
+                let syncText = resultDiv.querySelector('span:last-child');
+                if(syncText) syncText.innerText = "Results successfully synced to your teacher.";
+            })
+            .catch(() => {
+                btn.innerText = "Grading Complete (Sync Failed)";
+                btn.style.background = "#718096";
+                alert("Graded, but there was an error sending the data to the server. Please check your internet connection.");
+            });
+        }
+    </script>
+</body>
+</html>
